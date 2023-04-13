@@ -1,3 +1,35 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+api_login_check:
+    path: /api/login_check
+login:
+    path: /login
+    controller: App\Controller\SecurityController::index
+api_doc:
+    path: /api/docs.{_format}
+    methods: GET
+    defaults:
+        _controller: api_platform.action.swagger_ui
+        _format: html
+    requirements:
+        _format: html|json|jsonld
+api_platform:
+    path: /api
+    controller: App\Controller\ApiPlatformController::entrypoint
+api_platform_swagger:
+    path: /api/docs.{_format}
+    methods: GET
+    defaults:
+        _controller: api_platform.swagger.action.swagger
+        _format: json
+    requirements:
+        _format: json|yaml
+api_platform_swagger_ui:
+    path: /api/docs
+    methods: GET
+    defaults:
+        _controller: api_platform.swagger.action.ui
+        _format: html
+    requirements:
+        _format: html
