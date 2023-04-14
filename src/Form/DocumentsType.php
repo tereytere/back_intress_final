@@ -14,6 +14,7 @@ class DocumentsType extends AbstractType
         $builder
             ->add('date')
             ->add('description')
+            ->add('document')
         ;
     }
 
