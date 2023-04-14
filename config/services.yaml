@@ -7,6 +7,21 @@ parameters:
 
 services:
     # default configuration for services in *this* file
+    App\Controller\ApiDocumentsController:
+        autowire: true
+        autoconfigure: true
+    App\Controller\ApiHolidaysController:
+        autowire: true
+        autoconfigure: true
+    App\Controller\ApiWorkshopsController:
+        autowire: true
+        autoconfigure: true
+    App\Controller\ApiSigninController:
+        autowire: true
+        autoconfigure: true
+    App\Controller\ApiPersonalController:
+        autowire: true
+        autoconfigure: true
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
