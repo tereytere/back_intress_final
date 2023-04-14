@@ -24,9 +24,8 @@ class ApiDocumentsController extends AbstractController
             $data[] = [
                 'id' => $p->getId(),
                 'date' => $p->getDate(),
-                'name' => $p->getName(),
                 'description' => $p->getDescription(),
-                'personal' => $p->getPersonal(),
+                'document' => $p->getDocument(),
             ];
             
         }
