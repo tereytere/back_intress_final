@@ -40,4 +40,32 @@ class ApiPersonalController extends AbstractController
         //return $this->json($data);
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
+
+    #[Route('/create', name: 'app_apipersonal_create', methods: ['POST'])]
+    public function create(Request $request): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $personal = new Personal();
+
+        // aquí los datos enviados desde el front
+        $data = json_decode($request->getContent(), true);
+
+        // aquí se asignan los datos al personal
+        $personal->setName($data['name']);
+        $personal->setSurname($data['surname']);
+        $personal->setRol($data['rol']);
+        $personal->setVacation($data['vacation']);
+        $personal->setWorkshops($data['workshops']);
+        $personal->setSignin($data['signin']);
+        $personal->setHolidays($data['holidays']);
+        $personal->setDocuments($data['documents']);
+
+        $entityManager->persist($personal);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Personal created successfully'
+        ], $status = 201);
+    }
 }

@@ -36,4 +36,71 @@ class ApiSigninController extends AbstractController
         //return $this->json($data);
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
+
+    #[Route('/create', name: 'app_apisignin_create', methods: ['POST'])]
+public function create(Request $request): Response
+{
+    $data = json_decode($request->getContent(), true);
+    
+    // Aquí puedes validar los datos recibidos y crear una nueva entidad Signin
+    // a partir de los datos recibidos
+    
+    // Por ejemplo, si los datos recibidos son un arreglo asociativo, puedes crear una nueva entidad así:
+    $signin = new Signin();
+    $signin->setTimestart($data['timestart']);
+    $signin->setTimerestart($data['timerestart']);
+    $signin->setTimestop($data['timestop']);
+    $signin->setTimefinish($data['timefinish']);
+    $signin->setHourcount($data['hourcount']);
+
+    $entityManager = $this->getDoctrine()->getManager();
+    $entityManager->persist($signin);
+    $entityManager->flush();
+
+    return $this->json([
+        'message' => 'Signin created successfully',
+        'data' => [
+            'id' => $signin->getId(),
+            'timestart' => $signin->getTimestart(),
+            'timerestart' => $signin->getTimerestart(),
+            'timestop' => $signin->getTimestop(),
+            'timefinish' => $signin->getTimefinish(),
+            'hourcount' => $signin->getHourcount(),
+        ]
+    ]);
+}
+
+#[Route('/update/{id}', name: 'app_apisignin_update', methods: ['PUT', 'PATCH'])]
+public function update(Request $request, Signin $signin): Response
+{
+    $data = json_decode($request->getContent(), true);
+    
+    // Aquí puedes validar los datos recibidos y actualizar la entidad Signin
+    // correspondiente a partir de los datos recibidos
+    
+    // Por ejemplo, si los datos recibidos son un arreglo asociativo, puedes actualizar la entidad así:
+    $signin->setTimestart($data['timestart']);
+    $signin->setTimerestart($data['timerestart']);
+    $signin->setTimestop($data['timestop']);
+    $signin->setTimefinish($data['timefinish']);
+    $signin->setHourcount($data['hourcount']);
+
+    $entityManager = $this->getDoctrine()->getManager();
+    $entityManager->persist($signin);
+    $entityManager->flush();
+
+    return $this->json([
+        'message' => 'Signin updated successfully',
+        'data' => [
+            'id' => $signin->getId(),
+            'timestart' => $signin->getTimestart(),
+            'timerestart' => $signin->getTimerestart(),
+            'timestop' => $signin->getTimestop(),
+            'timefinish' => $signin->getTimefinish(),
+            'hourcount' => $signin->getHourcount(),
+        ]
+    ]);
+}
+
+
 }
