@@ -15,6 +15,7 @@ class DocumentsType extends AbstractType
             ->add('date')
             ->add('description')
             ->add('document')
+            ->add('docname')
         ;
     }
 
