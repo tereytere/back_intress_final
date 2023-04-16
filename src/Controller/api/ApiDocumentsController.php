@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\api;
 
 use App\Entity\Documents;
 use App\Form\DocumentsType;
@@ -26,6 +26,7 @@ class ApiDocumentsController extends AbstractController
                 'date' => $p->getDate(),
                 'description' => $p->getDescription(),
                 'document' => $p->getDocument(),
+                'docname' => $p->getDocname(),
             ];
             
         }
