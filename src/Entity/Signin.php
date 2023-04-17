@@ -110,6 +110,10 @@ class Signin
 
         return $this;
     }
+       public function __toString() {
+        return $this -> hourcount;
+    
+    }
 
     /**
      * @return Collection<int, Personal>
