@@ -9,6 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Persistence\ManagerRegistry;
+use Exception;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/documents')]
 class DocumentsController extends AbstractController
@@ -22,7 +26,7 @@ class DocumentsController extends AbstractController
     }
 
     #[Route('/new', name: 'app_documents_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, DocumentsRepository $documentsRepository): Response
+    public function new(Request $request, DocumentsRepository $documentsRepository, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         $document = new Documents();
         $form = $this->createForm(DocumentsType::class, $document);
@@ -30,6 +34,27 @@ class DocumentsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $documentsRepository->save($document, true);
+
+            $brochureFile = $form->get('document')->getData();
+            if ($brochureFile) {
+                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+
+                try {
+                    $brochureFile->move(
+                        $this->getParameter('documents_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new Exception('SORRY! Algo ha fallado');
+                }
+
+                $document->setDocument($newFilename);
+            }
+            $em = $doctrine->getManager();
+            $em->persist($document);
+            $em->flush();
 
             return $this->redirectToRoute('app_documents_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -49,13 +74,34 @@ class DocumentsController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_documents_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Documents $document, DocumentsRepository $documentsRepository): Response
+    public function edit(Request $request, Documents $document, DocumentsRepository $documentsRepository, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(DocumentsType::class, $document);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $documentsRepository->save($document, true);
+
+            $brochureFile = $form->get('document')->getData();
+            if ($brochureFile) {
+                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+
+                try {
+                    $brochureFile->move(
+                        $this->getParameter('documents_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new Exception('SORRY! Algo ha fallado');
+                }
+
+                $document->setDocument($newFilename);
+            }
+            $em = $doctrine->getManager();
+            $em->persist($document);
+            $em->flush();
 
             return $this->redirectToRoute('app_documents_index', [], Response::HTTP_SEE_OTHER);
         }
