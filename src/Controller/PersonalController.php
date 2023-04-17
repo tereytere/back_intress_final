@@ -9,6 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Persistence\ManagerRegistry;
+use Exception;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/personal')]
 class PersonalController extends AbstractController
@@ -22,7 +26,7 @@ class PersonalController extends AbstractController
     }
 
     #[Route('/new', name: 'app_personal_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, PersonalRepository $personalRepository): Response
+    public function new(Request $request, PersonalRepository $personalRepository, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
 
         $personal = new Personal();
@@ -31,6 +35,27 @@ class PersonalController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personalRepository->save($personal, true);
+
+            $brochureFile = $form->get('image')->getData();
+            if ($brochureFile) {
+                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+
+                try {
+                    $brochureFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new Exception('SORRY! Algo ha fallado');
+                }
+
+                $personal->setImage($newFilename);
+            }
+            $em = $doctrine->getManager();
+            $em->persist($personal);
+            $em->flush();
 
             return $this->redirectToRoute('app_personal_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -50,13 +75,35 @@ class PersonalController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_personal_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Personal $personal, PersonalRepository $personalRepository): Response
+    public function edit(Request $request, PersonalRepository $personalRepository, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
+        $personal = new Personal();
         $form = $this->createForm(PersonalType::class, $personal);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $personalRepository->save($personal, true);
+
+            $brochureFile = $form->get('image')->getData();
+            if ($brochureFile) {
+                $originalFilename = pathinfo($brochureFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$brochureFile->guessExtension();
+
+                try {
+                    $brochureFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new Exception('SORRY! Algo ha fallado');
+                }
+
+                $personal->setImage($newFilename);
+            }
+            $em = $doctrine->getManager();
+            $em->persist($personal);
+            $em->flush();
 
             return $this->redirectToRoute('app_personal_index', [], Response::HTTP_SEE_OTHER);
         }

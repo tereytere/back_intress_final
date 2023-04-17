@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\api;
 
 use App\Entity\Holidays;
 use App\Form\HolidaysType;
@@ -32,4 +32,83 @@ class ApiHolidaysController extends AbstractController
         //return $this->json($data);
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
+
+    #[Route('/create', name: 'app_apiholidays_create', methods: ['POST'])]
+public function create(Request $request): Response
+{
+    $data = json_decode($request->getContent(), true);
+
+    // Validar los datos recibidos
+
+    // Crear uHolidays y establece sus propiedades
+    $holiday = new Holidays();
+    $holiday->setUser($this->getUser());
+    $holiday->setDate(new \DateTime($data['date']));
+
+    // Guarda en la base de datos
+    $entityManager = $this->getDoctrine()->getManager();
+    $entityManager->persist($holiday);
+    $entityManager->flush();
+
+    return $this->json([
+        'id' => $holiday->getId(),
+        'date' => $holiday->getDate()->format('Y-m-d'),
+    ], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
+}
+
+#[Route('/new', name: 'app_apiholidays_new', methods: ['POST'])]
+    public function new(Request $request): Response
+    {
+        $holiday = new Holidays();
+        $form = $this->createForm(HolidaysType::class, $holiday);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($holiday);
+            $entityManager->flush();
+
+            return $this->json(['message' => 'Holiday created!'], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
+        }
+
+        return $this->json(['message' => 'Invalid data'], $status = 400, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
+
+    #[Route('/{id}', name: 'app_apiholidays_show', methods: ['GET'])]
+    public function show(Holidays $holiday): Response
+    {
+        $data = [
+            'id' => $holiday->getId(),
+            'date' => $holiday->getDate(),
+        ];
+
+        return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
+    #[Route('/{id}', name: 'app_apiholidays_update', methods: ['PUT'])]
+    public function update(Request $request, Holidays $holiday): Response
+    {
+        $form = $this->createForm(HolidaysType::class, $holiday);
+        $form->submit(json_decode($request->getContent(), true));
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($holiday);
+            $entityManager->flush();
+
+            return $this->json(['message' => 'Holiday updated!'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
+        }
+
+        return $this->json(['message' => 'Invalid data'], $status = 400, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
+
+    #[Route('/{id}', name: 'app_apiholidays_delete', methods: ['DELETE'])]
+    public function delete(Holidays $holiday): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($holiday);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Holiday deleted!'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
+
 }

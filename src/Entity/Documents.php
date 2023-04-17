@@ -24,6 +24,12 @@ class Documents
     #[ORM\OneToMany(mappedBy: 'documents', targetEntity: Personal::class)]
     private Collection $personals;
 
+    #[ORM\Column(length: 255)]
+    private ?string $document = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $docname = null;
+
     public function __construct()
     {
         $this->personals = new ArrayCollection();
@@ -84,6 +90,30 @@ class Documents
                 $personal->setDocuments(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDocument(): ?string
+    {
+        return $this->document;
+    }
+
+    public function setDocument(string $document): self
+    {
+        $this->document = $document;
+
+        return $this;
+    }
+
+    public function getDocname(): ?string
+    {
+        return $this->docname;
+    }
+
+    public function setDocname(string $docname): self
+    {
+        $this->docname = $docname;
 
         return $this;
     }

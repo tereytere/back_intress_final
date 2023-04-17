@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Documents;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class DocumentsType extends AbstractType
 {
@@ -13,7 +15,9 @@ class DocumentsType extends AbstractType
     {
         $builder
             ->add('date')
-            ->add('description')
+            ->add('description', TextareaType::class)
+            ->add('document', FileType::class)
+            ->add('docname')
         ;
     }
 
