@@ -24,6 +24,8 @@ class PersonalController extends AbstractController
     #[Route('/new', name: 'app_personal_new', methods: ['GET', 'POST'])]
     public function new(Request $request, PersonalRepository $personalRepository): Response
     {
+        $this->denyAccessUnlessGranted('CREATE', new Personal());
+
         $personal = new Personal();
         $form = $this->createForm(PersonalType::class, $personal);
         $form->handleRequest($request);
@@ -51,6 +53,7 @@ class PersonalController extends AbstractController
     #[Route('/{id}/edit', name: 'app_personal_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Personal $personal, PersonalRepository $personalRepository): Response
     {
+        $this->denyAccessUnlessGranted('EDIT', $personal);
         $form = $this->createForm(PersonalType::class, $personal);
         $form->handleRequest($request);
 
@@ -69,6 +72,8 @@ class PersonalController extends AbstractController
     #[Route('/{id}', name: 'app_personal_delete', methods: ['POST'])]
     public function delete(Request $request, Personal $personal, PersonalRepository $personalRepository): Response
     {
+        $this->denyAccessUnlessGranted('DELETE', $personal);
+
         if ($this->isCsrfTokenValid('delete'.$personal->getId(), $request->request->get('_token'))) {
             $personalRepository->remove($personal, true);
         }
