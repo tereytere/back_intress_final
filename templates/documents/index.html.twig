@@ -12,6 +12,7 @@
                 <th>Date</th>
                 <th>Description</th>
                 <th>Document</th>
+                <th>Docname</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <td>{{ document.date }}</td>
                 <td>{{ document.description }}</td>
                 <td>{{ document.document }}</td>
+                <td>{{ document.docname }}</td>
                 <td>
                     <a href="{{ path('app_documents_show', {'id': document.id}) }}">show</a>
                     <a href="{{ path('app_documents_edit', {'id': document.id}) }}">edit</a>
