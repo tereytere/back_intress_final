@@ -8,7 +8,12 @@ use App\Repository\HolidaysRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apiholidays')]
 class ApiHolidaysController extends AbstractController
@@ -34,7 +39,7 @@ class ApiHolidaysController extends AbstractController
     }
 
     #[Route('/create', name: 'app_apiholidays_create', methods: ['POST'])]
-public function create(Request $request): Response
+public function create(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
 {
     $data = json_decode($request->getContent(), true);
 
@@ -46,9 +51,9 @@ public function create(Request $request): Response
     $holiday->setDate(new \DateTime($data['date']));
 
     // Guarda en la base de datos
-    $entityManager = $this->getDoctrine()->getManager();
-    $entityManager->persist($holiday);
-    $entityManager->flush();
+    $em = $doctrine->getManager();
+    $em->persist($holiday);
+    $em->flush();
 
     return $this->json([
         'id' => $holiday->getId(),
@@ -57,16 +62,16 @@ public function create(Request $request): Response
 }
 
 #[Route('/new', name: 'app_apiholidays_new', methods: ['POST'])]
-    public function new(Request $request): Response
+    public function new(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         $holiday = new Holidays();
         $form = $this->createForm(HolidaysType::class, $holiday);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($holiday);
-            $entityManager->flush();
+            $em = $doctrine->getManager();
+            $em->persist($holiday);
+            $em->flush();
 
             return $this->json(['message' => 'Holiday created!'], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
         }
@@ -85,15 +90,15 @@ public function create(Request $request): Response
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
     #[Route('/{id}', name: 'app_apiholidays_update', methods: ['PUT'])]
-    public function update(Request $request, Holidays $holiday): Response
+    public function update(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, Holidays $holiday): Response
     {
         $form = $this->createForm(HolidaysType::class, $holiday);
         $form->submit(json_decode($request->getContent(), true));
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($holiday);
-            $entityManager->flush();
+            $em = $doctrine->getManager();
+            $em->persist($holiday);
+            $em->flush();
 
             return $this->json(['message' => 'Holiday updated!'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
         }
@@ -102,11 +107,11 @@ public function create(Request $request): Response
     }
 
     #[Route('/{id}', name: 'app_apiholidays_delete', methods: ['DELETE'])]
-    public function delete(Holidays $holiday): Response
+    public function delete(Holidays $holiday, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($holiday);
-        $entityManager->flush();
+        $em = $doctrine->getManager();
+        $em->remove($holiday);
+        $em->flush();
 
         return $this->json(['message' => 'Holiday deleted!'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
