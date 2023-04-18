@@ -28,21 +28,27 @@ class Personal
     private ?string $rol = null;
 
     #[ORM\OneToMany(mappedBy: 'personal', targetEntity: Vacation::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $vacations;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Workshops $workshops = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Signin $signin = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Holidays $holidays = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Documents $documents = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Vacation $vacation = null;
 
     public function __construct()
@@ -138,11 +144,9 @@ class Personal
         return $this->workshops;
     }
 
-    public function setWorkshops(?Workshops $workshops): self
+    private function setWorkshops(?Workshops $workshops): void
     {
         $this->workshops = $workshops;
-
-        return $this;
     }
 
     public function getSignin(): ?Signin
@@ -150,11 +154,9 @@ class Personal
         return $this->signin;
     }
 
-    public function setSignin(?Signin $signin): self
+    private function setSignin(?Signin $signin): void
     {
         $this->signin = $signin;
-
-        return $this;
     }
 
     public function getHolidays(): ?Holidays
@@ -162,11 +164,9 @@ class Personal
         return $this->holidays;
     }
 
-    public function setHolidays(?Holidays $holidays): self
+    private function setHolidays(?Holidays $holidays): void
     {
         $this->holidays = $holidays;
-
-        return $this;
     }
 
     public function getDocuments(): ?Documents
@@ -174,11 +174,9 @@ class Personal
         return $this->documents;
     }
 
-    public function setDocuments(?Documents $documents): self
+    private function setDocuments(?Documents $documents): void
     {
         $this->documents = $documents;
-
-        return $this;
     }
 
     public function getVacation(): ?Vacation

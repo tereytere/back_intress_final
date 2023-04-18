@@ -20,7 +20,7 @@ class PersonalType extends AbstractType
             ->add('workshops')
             ->add('signin')
             ->add('holidays')
-            ->add('documents', FileType::class)
+            ->add('documents')
             ->add('vacation')
         ;
     }
