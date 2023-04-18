@@ -8,7 +8,12 @@ use App\Repository\WorkshopsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apiworkshops')]
 class ApiWorkshopsController extends AbstractController
@@ -37,7 +42,7 @@ class ApiWorkshopsController extends AbstractController
     }
 
     #[Route('/create', name: 'app_apiworkshops_create', methods: ['POST'])]
-    public function create(Request $request): Response
+    public function create(Request $request, ManagerRegistry $doctrine): Response
     {
         $workshop = new Workshops();
 
@@ -45,9 +50,9 @@ class ApiWorkshopsController extends AbstractController
         $form->submit(json_decode($request->getContent(), true));
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($workshop);
-            $entityManager->flush();
+            $em = $doctrine->getManager();
+            $em->persist($workshop);
+            $em->flush();
 
             return $this->json(['status' => 'success'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
         }
@@ -56,15 +61,15 @@ class ApiWorkshopsController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'app_apiworkshops_update', methods: ['PUT'])]
-    public function update(Request $request, Workshops $workshop): Response
+    public function update(Request $request, Workshops $workshop, ManagerRegistry $doctrine): Response
     {
         $form = $this->createForm(WorkshopsType::class, $workshop);
         $form->submit(json_decode($request->getContent(), true));
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($workshop);
-            $entityManager->flush();
+            $em = $doctrine->getManager();
+            $em->persist($workshop);
+            $em->flush();
 
             return $this->json(['status' => 'success'], $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
         }
