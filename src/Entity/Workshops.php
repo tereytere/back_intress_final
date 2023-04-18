@@ -33,6 +33,9 @@ class Workshops
     #[ORM\ManyToMany(targetEntity: Holidays::class, inversedBy: 'workshops')]
     private Collection $holidays;
 
+    #[ORM\Column(length: 255)]
+    private ?string $tasks = null;
+
     public function __construct()
     {
         $this->personals = new ArrayCollection();
@@ -155,6 +158,18 @@ class Workshops
     public function removeHoliday(Holidays $holiday): self
     {
         $this->holidays->removeElement($holiday);
+
+        return $this;
+    }
+
+    public function getTasks(): ?string
+    {
+        return $this->tasks;
+    }
+
+    public function setTasks(string $tasks): self
+    {
+        $this->tasks = $tasks;
 
         return $this;
     }

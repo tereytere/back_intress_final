@@ -17,6 +17,7 @@ class WorkshopsType extends AbstractType
             ->add('description')
             ->add('signin')
             ->add('holidays')
+            ->add('tasks')
         ;
     }
 

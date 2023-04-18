@@ -28,6 +28,7 @@ class PersonalController extends AbstractController
     #[Route('/new', name: 'app_personal_new', methods: ['GET', 'POST'])]
     public function new(Request $request, PersonalRepository $personalRepository, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
+
         $personal = new Personal();
         $form = $this->createForm(PersonalType::class, $personal);
         $form->handleRequest($request);
@@ -116,6 +117,7 @@ class PersonalController extends AbstractController
     #[Route('/{id}', name: 'app_personal_delete', methods: ['POST'])]
     public function delete(Request $request, Personal $personal, PersonalRepository $personalRepository): Response
     {
+
         if ($this->isCsrfTokenValid('delete'.$personal->getId(), $request->request->get('_token'))) {
             $personalRepository->remove($personal, true);
         }
