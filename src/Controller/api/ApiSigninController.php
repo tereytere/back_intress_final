@@ -8,7 +8,12 @@ use App\Repository\SigninRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apisignin')]
 class ApiSigninController extends AbstractController
@@ -38,7 +43,7 @@ class ApiSigninController extends AbstractController
     }
 
     #[Route('/create', name: 'app_apisignin_create', methods: ['POST'])]
-public function create(Request $request): Response
+public function create(Request $request, ManagerRegistry $doctrine): Response
 {
     $data = json_decode($request->getContent(), true);
     
@@ -53,9 +58,9 @@ public function create(Request $request): Response
     $signin->setTimefinish($data['timefinish']);
     $signin->setHourcount($data['hourcount']);
 
-    $entityManager = $this->getDoctrine()->getManager();
-    $entityManager->persist($signin);
-    $entityManager->flush();
+    $em = $doctrine->getManager();
+    $em->persist($signin);
+    $em->flush();
 
     return $this->json([
         'message' => 'Signin created successfully',
@@ -71,7 +76,7 @@ public function create(Request $request): Response
 }
 
 #[Route('/update/{id}', name: 'app_apisignin_update', methods: ['PUT', 'PATCH'])]
-public function update(Request $request, Signin $signin): Response
+public function update(Request $request, Signin $signin, ManagerRegistry $doctrine): Response
 {
     $data = json_decode($request->getContent(), true);
     
@@ -85,9 +90,9 @@ public function update(Request $request, Signin $signin): Response
     $signin->setTimefinish($data['timefinish']);
     $signin->setHourcount($data['hourcount']);
 
-    $entityManager = $this->getDoctrine()->getManager();
-    $entityManager->persist($signin);
-    $entityManager->flush();
+    $em = $doctrine->getManager();
+    $em->persist($signin);
+    $em->flush();
 
     return $this->json([
         'message' => 'Signin updated successfully',

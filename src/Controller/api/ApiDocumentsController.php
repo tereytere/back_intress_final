@@ -8,10 +8,11 @@ use App\Repository\DocumentsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apidocuments')]
@@ -49,7 +50,7 @@ class ApiDocumentsController extends AbstractController
     }
 
     #[Route('/create', name: 'app_apidocuments_create', methods: ['POST'])]
-    public function create(Request $request): Response
+    public function create(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         $document = new Documents();
         $form = $this->createForm(DocumentsType::class, $document);
@@ -73,9 +74,9 @@ class ApiDocumentsController extends AbstractController
 
             $document->setFile($fileName);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($document);
-            $entityManager->flush();
+            $em = $doctrine->getManager();
+            $em->persist($document);
+            $em->flush();
 
             return $this->json([
                 'message' => 'Documento creado correctamente'

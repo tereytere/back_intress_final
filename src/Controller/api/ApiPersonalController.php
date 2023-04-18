@@ -8,7 +8,12 @@ use App\Repository\PersonalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apipersonal')]
 class ApiPersonalController extends AbstractController
@@ -42,9 +47,9 @@ class ApiPersonalController extends AbstractController
     }
 
     #[Route('/create', name: 'app_apipersonal_create', methods: ['POST'])]
-    public function create(Request $request): Response
+    public function create(Request $request, ManagerRegistry $doctrine): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        $em = $doctrine->getManager();
 
         $personal = new Personal();
 
@@ -61,8 +66,8 @@ class ApiPersonalController extends AbstractController
         $personal->setHolidays($data['holidays']);
         $personal->setDocuments($data['documents']);
 
-        $entityManager->persist($personal);
-        $entityManager->flush();
+        $em->persist($personal);
+        $em->flush();
 
         return $this->json([
             'message' => 'Personal created successfully'
