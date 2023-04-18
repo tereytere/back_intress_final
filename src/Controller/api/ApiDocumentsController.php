@@ -56,6 +56,30 @@ class ApiDocumentsController extends AbstractController
         $form = $this->createForm(DocumentsType::class, $document);
         $form->handleRequest($request);
 
+        // $uploadedFile = $request->files->get('document');
+        // if (!$uploadedFile) {
+        //     return $this->json(['error' => 'No file uploaded'], 400);
+        // }
+
+        // // Store the file in a server directory
+        // $destination = $this->getParameter('kernel.project_dir').'/public/uploads/documents';
+        // $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+        // $safeFilename = $slugger->slug($originalFilename);
+        // $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadedFile->guessExtension();
+        // $uploadedFile->move(
+        //     $destination,
+        //     $newFilename
+        // );
+
+        // // Do other operations with the submitted file data
+        // $submittedDateTime = new \DateTime();
+        // $data = [
+        //     'fileName' => $newFilename,
+        //     'submitTime' => $submittedDateTime->format('Y-m-d H:i:s'),
+        // ];
+
+        // return $this->json($data, 200);
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
@@ -79,12 +103,12 @@ class ApiDocumentsController extends AbstractController
             $em->flush();
 
             return $this->json([
-                'message' => 'Documento creado correctamente'
+                'message' => 'Documento subido correctamente'
             ], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
         }
 
         return $this->json([
-            'message' => 'Formulario no válido'
+            'message' => 'Se ha producido un ERROR'
         ], $status = 400, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
 }

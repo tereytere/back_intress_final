@@ -144,9 +144,11 @@ class Personal
         return $this->workshops;
     }
 
-    private function setWorkshops(?Workshops $workshops): void
+    public function setWorkshops(?Workshops $workshops): self
     {
         $this->workshops = $workshops;
+
+        return $this;
     }
 
     public function getSignin(): ?Signin
@@ -154,9 +156,11 @@ class Personal
         return $this->signin;
     }
 
-    private function setSignin(?Signin $signin): void
+    public function setSignin(?Signin $signin): self
     {
         $this->signin = $signin;
+
+        return $this;
     }
 
     public function getHolidays(): ?Holidays
@@ -164,9 +168,11 @@ class Personal
         return $this->holidays;
     }
 
-    private function setHolidays(?Holidays $holidays): void
+    public function setHolidays(?Holidays $holidays): self
     {
         $this->holidays = $holidays;
+
+        return $this;
     }
 
     public function getDocuments(): ?Documents
@@ -174,9 +180,11 @@ class Personal
         return $this->documents;
     }
 
-    private function setDocuments(?Documents $documents): void
+    public function setDocuments(?Documents $documents): self
     {
         $this->documents = $documents;
+
+        return $this;
     }
 
     public function getVacation(): ?Vacation
