@@ -12,6 +12,7 @@
                 <th>Name</th>
                 <th>Date</th>
                 <th>Description</th>
+                <th>Tasks</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <td>{{ workshop.name }}</td>
                 <td>{{ workshop.date }}</td>
                 <td>{{ workshop.description }}</td>
+                <td>{{ workshop.tasks }}</td>
                 <td>
                     <a href="{{ path('app_workshops_show', {'id': workshop.id}) }}">show</a>
                     <a href="{{ path('app_workshops_edit', {'id': workshop.id}) }}">edit</a>
