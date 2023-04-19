@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\api;
 
+use App\Entity\Documents;
+use App\Form\DocumentsType;
+use App\Repository\DocumentsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,12 +13,11 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class FileUploadController extends AbstractController
 {
-    /**
-     * @Route("/api/fileUpload", name="api_file_upload", methods={"POST"})
-     */
+    #[Route('/api/fileUpload', name:'api_file_upload', methods: ['POST'])]
+
     public function upload(Request $request, SluggerInterface $slugger): Response
     {
-        $uploadedFile = $request->files->get('file');
+        $uploadedFile = $request->files->get('document');
         if (!$uploadedFile) {
             return $this->json(['error' => 'No file uploaded'], 400);
         }
