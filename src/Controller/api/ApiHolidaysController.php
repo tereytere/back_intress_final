@@ -45,7 +45,7 @@ public function create(Request $request, ManagerRegistry $doctrine, SluggerInter
 
     // Validar los datos recibidos
 
-    // Crear uHolidays y establece sus propiedades
+    // Crear Holidays y establecer sus propiedades
     $holiday = new Holidays();
     $holiday->setUser($this->getUser());
     $holiday->setDate(new \DateTime($data['date']));
