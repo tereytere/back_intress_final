@@ -117,4 +117,8 @@ class Documents
 
         return $this;
     }
+    public function __toString() {
+        return $this -> docname;
+    
+    }
 }

@@ -33,7 +33,7 @@ class Workshops
     #[ORM\ManyToMany(targetEntity: Holidays::class, inversedBy: 'workshops')]
     private Collection $holidays;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 500)]
     private ?string $tasks = null;
 
     public function __construct()
@@ -172,5 +172,9 @@ class Workshops
         $this->tasks = $tasks;
 
         return $this;
+    }
+    public function __toString() {
+        return $this -> tasks;
+    
     }
 }
