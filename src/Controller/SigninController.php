@@ -13,13 +13,34 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/signin')]
 class SigninController extends AbstractController
 {
-    #[Route('/', name: 'app_signin_index', methods: ['GET'])]
+    #[Route('/list', name: 'app_signin_index', methods: ['GET'])]
     public function index(SigninRepository $signinRepository): Response
     {
         return $this->render('signin/index.html.twig', [
             'signins' => $signinRepository->findAll(),
         ]);
     }
+
+    #[Route('/create', name: 'app_signin_create', methods: ['POST'])]
+public function create(Request $request, SigninRepository $signinRepository): Response
+{
+    $data = json_decode($request->getContent(), true);
+    $timestart = $data['timestart'];
+    $timestop = $data['timestop'];
+    $timeRestart = $data['timeRestart'];
+    $timefinish = $data['timefinish'];
+
+    $signin = new Signin();
+    $signin->setTimestart($timestart);
+    $signin->setTimestop($timestop);
+    $signin->setTimeRestart($timeRestart);
+    $signin->setTimefinish($timefinish);
+
+    $signinRepository->save($signin, true);
+
+    return $this->json(['status' => 'ok']);
+}
+
 
     #[Route('/new', name: 'app_signin_new', methods: ['GET', 'POST'])]
     public function new(Request $request, SigninRepository $signinRepository): Response
