@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
@@ -42,10 +40,6 @@ class ApiHolidaysController extends AbstractController
 public function create(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
 {
     $data = json_decode($request->getContent(), true);
-
-    // Validar los datos recibidos
-
-    // Crear Holidays y establecer sus propiedades
     $holiday = new Holidays();
     $holiday->setUser($this->getUser());
     $holiday->setDate(new \DateTime($data['date']));
