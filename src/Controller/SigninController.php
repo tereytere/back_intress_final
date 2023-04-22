@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/signin')]
 class SigninController extends AbstractController
 {
+  
     #[Route('/list', name: 'app_signin_index', methods: ['GET'])]
     public function index(SigninRepository $signinRepository): Response
     {
