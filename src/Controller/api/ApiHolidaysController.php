@@ -33,26 +33,38 @@ class ApiHolidaysController extends AbstractController
 
         //dump($data);die; 
         //return $this->json($data);
-        return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
+        return $this->json($data, 200, ['Access-Control-Allow-Origin'=>'*']);
     }
 
     #[Route('/create', name: 'app_apiholidays_create', methods: ['POST'])]
 public function create(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
 {
     $data = json_decode($request->getContent(), true);
+
+    if ($data === null) {
+        return $this->json(['message' => 'Error: Invalid JSON data received.'], $status = 400, $headers = ['Access-Control-Allow-Origin' => '*']);
+}
     $holiday = new Holidays();
     $holiday->setUser($this->getUser());
-    $holiday->setDate(new \DateTime($data['date']));
+    
+    if (isset($data['date']) && $data['date'] !== null) {
+        $holiday->setDate((new \DateTime($data['date']))->format('Y-m-d'));
+    } else {
+        return $this->json(['message' => 'Error: Date not found.'], $status = 400, $headers = ['Access-Control-Allow-Origin' => '*']);
+    }
 
-    // Guarda en la base de datos
+    
     $em = $doctrine->getManager();
     $em->persist($holiday);
     $em->flush();
 
-    return $this->json([
-        'id' => $holiday->getId(),
-        'date' => $holiday->getDate()->format('Y-m-d'),
-    ], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    $holidayId = $holiday->getId() ?: '';
+    $holidayDate = $holiday->getDate() instanceof \DateTime ? : ''; 
+
+return $this->json([
+    'id' => $holidayId,
+    'date' => $holidayDate,
+], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
 }
 
 #[Route('/new', name: 'app_apiholidays_new', methods: ['POST'])]
@@ -86,8 +98,15 @@ public function create(Request $request, ManagerRegistry $doctrine, SluggerInter
     #[Route('/{id}', name: 'app_apiholidays_update', methods: ['PUT'])]
     public function update(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, Holidays $holiday): Response
     {
+        $data = json_decode($request->getContent(), true);
+
+    if ($data === null || !is_object($data)) { 
+        return $this->json(['message' => 'Error: Invalid JSON data received.'], $status = 400, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
         $form = $this->createForm(HolidaysType::class, $holiday);
-        $form->submit(json_decode($request->getContent(), true));
+        $form->submit($data);
+
+        
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $doctrine->getManager();

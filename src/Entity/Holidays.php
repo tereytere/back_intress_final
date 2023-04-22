@@ -30,6 +30,12 @@ class Holidays
     #[ORM\ManyToMany(targetEntity: Signin::class, mappedBy: 'holidays')]
     private Collection $signins;
 
+    public $user; 
+
+    public function setUser($user) {
+        $this->user = $user;
+    }
+    
     public function __construct()
     {
         $this->vacations = new ArrayCollection();
