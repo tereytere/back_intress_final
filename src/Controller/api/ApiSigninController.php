@@ -8,12 +8,10 @@ use App\Repository\SigninRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Routing\Annotation\Route;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 #[Route('/apisignin')]
 class ApiSigninController extends AbstractController
@@ -34,7 +32,7 @@ class ApiSigninController extends AbstractController
                 'timefinish' => $p->getTimefinish(),
                 'hourcount' => $p->getHourcount(),
             ];
-            
+
         }
 
         //dump($data);die; 
@@ -42,70 +40,46 @@ class ApiSigninController extends AbstractController
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
     }
 
-    #[Route('/create', name: 'app_apisignin_create', methods: ['POST'])]
-public function create(Request $request, ManagerRegistry $doctrine): Response
+    #[Route('/create', name: 'app_signin_create', methods: ['POST'])]
+public function create(Request $request, SigninRepository $signinRepository, JWTTokenManagerInterface $jwtManager, ManagerRegistry $doctrine): Response
 {
     $data = json_decode($request->getContent(), true);
-    
-    // Aquí puedes validar los datos recibidos y crear una nueva entidad Signin
-    // a partir de los datos recibidos
-    
-    // Por ejemplo, si los datos recibidos son un arreglo asociativo, puedes crear una nueva entidad así:
+
     $signin = new Signin();
-    $signin->setTimestart($data['timestart']);
-    $signin->setTimerestart($data['timerestart']);
-    $signin->setTimestop($data['timestop']);
-    $signin->setTimefinish($data['timefinish']);
-    $signin->setHourcount($data['hourcount']);
+
+    $timestart = date('Y-m-d H:i:s'); 
+
+    if (isset($data['startTime'])) {
+        $signin->setTimestart($data['startTime']);
+    } else {
+        $signin->setTimestart($timestart); 
+    }
+
+    if (isset($data['endTime'])) {
+        $signin->setTimestop($data['endTime']);
+    } else {
+        
+        $signin->setTimestop(date('Y-m-d H:i:s'));
+    }
+
+    if (isset($data['pausedTime'])) {
+        $signin->setTimerestart($data['pausedTime']);
+    }
+
+    if (isset($data['timeFinish'])) {
+        $signin->setTimefinish($data['timeFinish']);
+    }
+
+    if (isset($data['totalHours'])) {
+        $signin->setHourcount($data['totalHours']);
+    }
 
     $em = $doctrine->getManager();
     $em->persist($signin);
     $em->flush();
 
-    return $this->json([
-        'message' => 'Signin created successfully',
-        'data' => [
-            'id' => $signin->getId(),
-            'timestart' => $signin->getTimestart(),
-            'timerestart' => $signin->getTimerestart(),
-            'timestop' => $signin->getTimestop(),
-            'timefinish' => $signin->getTimefinish(),
-            'hourcount' => $signin->getHourcount(),
-        ]
-    ]);
+    $token = $jwtManager->create($this->getUser());
+
+    return $this->json(['status' => 'ok', 'token' => $token]);
 }
-
-#[Route('/update/{id}', name: 'app_apisignin_update', methods: ['PUT', 'PATCH'])]
-public function update(Request $request, Signin $signin, ManagerRegistry $doctrine): Response
-{
-    $data = json_decode($request->getContent(), true);
-    
-    // Aquí puedes validar los datos recibidos y actualizar la entidad Signin
-    // correspondiente a partir de los datos recibidos
-    
-    // Por ejemplo, si los datos recibidos son un arreglo asociativo, puedes actualizar la entidad así:
-    $signin->setTimestart($data['timestart']);
-    $signin->setTimerestart($data['timerestart']);
-    $signin->setTimestop($data['timestop']);
-    $signin->setTimefinish($data['timefinish']);
-    $signin->setHourcount($data['hourcount']);
-
-    $em = $doctrine->getManager();
-    $em->persist($signin);
-    $em->flush();
-
-    return $this->json([
-        'message' => 'Signin updated successfully',
-        'data' => [
-            'id' => $signin->getId(),
-            'timestart' => $signin->getTimestart(),
-            'timerestart' => $signin->getTimerestart(),
-            'timestop' => $signin->getTimestop(),
-            'timefinish' => $signin->getTimefinish(),
-            'hourcount' => $signin->getHourcount(),
-        ]
-    ]);
-}
-
-
 }
