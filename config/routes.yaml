@@ -6,6 +6,13 @@ api_login_check:
 login:
     path: /login
     controller: App\Controller\SecurityController::index
+
+# ...
+app_apisignin:
+    path: /apisignin/create
+    controller: App\Controller\ApiUserController::create
+    methods: [POST]
+    
 # api_doc:
 #     path: /api/docs.{_format}
 #     methods: GET

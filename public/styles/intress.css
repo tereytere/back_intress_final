@@ -23,7 +23,7 @@ input{
     border-radius: 15px;
     outline: none;
 }
-#personal, #signin, #workshops, #documents, #holidays{
+#personal, #signin, #workshops, #documents, #holidays, #tasks{
     align-items: center;
     justify-content: center;
     margin-left: 285px;
