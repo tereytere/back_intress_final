@@ -46,12 +46,6 @@ symfony server:start
 ```
 
 
-<p>After adding the extension to the URL that comes by default, the following will appear:</p>
-
-<img  width="895" alt="aplicación-registro" src="https://github.com/thania2004/images-github/blob/acc07c5600d567a45b8f8a3e4056b78fd8193ea0/aplicaci%C3%B3n-registro.png">
-
-
-
 <br>
 <h3> Test Initialization🏅 </h3>
 
