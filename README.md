@@ -84,7 +84,7 @@ php bin/phpunit
   <li>For future sprints we plan to finish connecting the POST method from the back to the front, create the Master user view, test in symfony
 and create the crud for the notifications </li>
 </ul>
-<h2>Autores ✍️ </h2>
+<h2>Authors ✍️ </h2>
 <ul>
 <li><a href="https://github.com/kiaramm10">@kiaramm10</a></li>
 <li><a href="https://github.com/22Lau">@22Lau</a></li>
