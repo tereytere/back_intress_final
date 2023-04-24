@@ -45,6 +45,10 @@ class Vacation
 
         return $this;
     }
+    public function __toString() {
+        return $this ->personal;
+    
+    }
 
     public function getHolidays(): ?Holidays
     {

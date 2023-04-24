@@ -39,6 +39,9 @@ class Signin
     #[ORM\ManyToMany(targetEntity: Holidays::class, inversedBy: 'signins')]
     private Collection $holidays;
 
+    #[ORM\Column(length: 255)]
+    private ?string $dates = null;
+
     public function __construct()
     {
         $this->personals = new ArrayCollection();
@@ -109,6 +112,10 @@ class Signin
         $this->hourcount = $hourcount;
 
         return $this;
+    }
+       public function __toString() {
+        return $this -> hourcount;
+    
     }
 
     /**
@@ -188,6 +195,18 @@ class Signin
     public function removeHoliday(Holidays $holiday): self
     {
         $this->holidays->removeElement($holiday);
+
+        return $this;
+    }
+
+    public function getDates(): ?string
+    {
+        return $this->dates;
+    }
+
+    public function setDates(string $dates): self
+    {
+        $this->dates = $dates;
 
         return $this;
     }

@@ -27,6 +27,9 @@ class Documents
     #[ORM\Column(length: 255)]
     private ?string $document = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $docname = null;
+
     public function __construct()
     {
         $this->personals = new ArrayCollection();
@@ -60,6 +63,8 @@ class Documents
 
         return $this;
     }
+
+    
 
     /**
      * @return Collection<int, Personal>
@@ -101,5 +106,21 @@ class Documents
         $this->document = $document;
 
         return $this;
+    }
+
+    public function getDocname(): ?string
+    {
+        return $this->docname;
+    }
+
+    public function setDocname(string $docname): self
+    {
+        $this->docname = $docname;
+
+        return $this;
+    }
+    public function __toString() {
+        return $this -> docname;
+    
     }
 }

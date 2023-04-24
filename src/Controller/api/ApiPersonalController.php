@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\api;
 
 use App\Entity\Personal;
 use App\Form\PersonalType;
@@ -8,7 +8,12 @@ use App\Repository\PersonalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/apipersonal')]
 class ApiPersonalController extends AbstractController
@@ -39,5 +44,33 @@ class ApiPersonalController extends AbstractController
         //dump($data);die; 
         //return $this->json($data);
         return $this->json($data, $status = 200, $headers = ['Access-Control-Allow-Origin'=>'*']);
+    }
+
+    #[Route('/create', name: 'app_apipersonal_create', methods: ['POST'])]
+    public function create(Request $request, ManagerRegistry $doctrine): Response
+    {
+        $em = $doctrine->getManager();
+
+        $personal = new Personal();
+
+        // aquí los datos enviados desde el front
+        $data = json_decode($request->getContent(), true);
+
+        // aquí se asignan los datos al personal
+        $personal->setName($data['name']);
+        $personal->setSurname($data['surname']);
+        $personal->setRol($data['rol']);
+        $personal->setVacation($data['vacation']);
+        $personal->setWorkshops($data['workshops']);
+        $personal->setSignin($data['signin']);
+        $personal->setHolidays($data['holidays']);
+        $personal->setDocuments($data['documents']);
+
+        $em->persist($personal);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Personal created successfully'
+        ], $status = 201);
     }
 }

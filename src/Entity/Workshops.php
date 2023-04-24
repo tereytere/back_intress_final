@@ -33,6 +33,9 @@ class Workshops
     #[ORM\ManyToMany(targetEntity: Holidays::class, inversedBy: 'workshops')]
     private Collection $holidays;
 
+    #[ORM\ManyToOne(inversedBy: 'savetask')]
+    private ?Tasks $tasks = null;
+
     public function __construct()
     {
         $this->personals = new ArrayCollection();
@@ -79,6 +82,10 @@ class Workshops
         $this->description = $description;
 
         return $this;
+    }
+    public function __toString() {
+        return $this -> description;
+    
     }
 
     /**
@@ -158,4 +165,18 @@ class Workshops
 
         return $this;
     }
+
+    public function getTasks(): ?Tasks
+    {
+        return $this->tasks;
+    }
+
+    public function setTasks(?Tasks $tasks): self
+    {
+        $this->tasks = $tasks;
+
+        return $this;
+    }
+
+
 }

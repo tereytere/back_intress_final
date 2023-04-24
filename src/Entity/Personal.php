@@ -28,21 +28,27 @@ class Personal
     private ?string $rol = null;
 
     #[ORM\OneToMany(mappedBy: 'personal', targetEntity: Vacation::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $vacations;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Workshops $workshops = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Signin $signin = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Holidays $holidays = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Documents $documents = null;
 
     #[ORM\ManyToOne(inversedBy: 'personals')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Vacation $vacation = null;
 
     public function __construct()
@@ -168,6 +174,14 @@ class Personal
 
         return $this;
     }
+    public function __toString()
+{
+    if ($this->holidays !== null) {
+        return $this->holidays;
+    } else {
+        return '';        
+    };
+}
 
     public function getDocuments(): ?Documents
     {

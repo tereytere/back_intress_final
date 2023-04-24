@@ -30,6 +30,15 @@ class Holidays
     #[ORM\ManyToMany(targetEntity: Signin::class, mappedBy: 'holidays')]
     private Collection $signins;
 
+    public $user;
+
+    #[ORM\Column(length: 255)]
+    private ?string $days = null; 
+
+    public function setUser($user) {
+        $this->user = $user;
+    }
+    
     public function __construct()
     {
         $this->vacations = new ArrayCollection();
@@ -53,6 +62,11 @@ class Holidays
         $this->date = $date;
 
         return $this;
+    }
+
+    public function __toString() {
+        return $this -> date;
+    
     }
 
     /**
@@ -165,6 +179,18 @@ class Holidays
         if ($this->signins->removeElement($signin)) {
             $signin->removeHoliday($this);
         }
+
+        return $this;
+    }
+
+    public function getDays(): ?string
+    {
+        return $this->days;
+    }
+
+    public function setDays(string $days): self
+    {
+        $this->days = $days;
 
         return $this;
     }
