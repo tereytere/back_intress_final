@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Dates</th>                
                 <th>Timestart</th>
                 <th>Timestop</th>
                 <th>Timerestart</th>
@@ -21,6 +22,7 @@
         {% for signin in signins %}
             <tr>
                 <td>{{ signin.id }}</td>
+                <td>{{ signin.dates }}</td>
                 <td>{{ signin.timestart }}</td>
                 <td>{{ signin.timestop }}</td>
                 <td>{{ signin.timerestart }}</td>

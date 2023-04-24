@@ -174,6 +174,14 @@ class Personal
 
         return $this;
     }
+    public function __toString()
+{
+    if ($this->holidays !== null) {
+        return $this->holidays;
+    } else {
+        return '';        
+    };
+}
 
     public function getDocuments(): ?Documents
     {

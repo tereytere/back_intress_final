@@ -30,7 +30,10 @@ class Holidays
     #[ORM\ManyToMany(targetEntity: Signin::class, mappedBy: 'holidays')]
     private Collection $signins;
 
-    public $user; 
+    public $user;
+
+    #[ORM\Column(length: 255)]
+    private ?string $days = null; 
 
     public function setUser($user) {
         $this->user = $user;
@@ -176,6 +179,18 @@ class Holidays
         if ($this->signins->removeElement($signin)) {
             $signin->removeHoliday($this);
         }
+
+        return $this;
+    }
+
+    public function getDays(): ?string
+    {
+        return $this->days;
+    }
+
+    public function setDays(string $days): self
+    {
+        $this->days = $days;
 
         return $this;
     }
