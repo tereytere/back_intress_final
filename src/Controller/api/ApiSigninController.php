@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[Route('/apisignin')]
 class ApiSigninController extends AbstractController
@@ -41,45 +43,55 @@ class ApiSigninController extends AbstractController
     }
 
     #[Route('/create', name: 'app_signin_create', methods: ['POST'])]
-public function create(Request $request, SigninRepository $signinRepository, JWTTokenManagerInterface $jwtManager, ManagerRegistry $doctrine): Response
-{
-    $data = json_decode($request->getContent(), true);
-
-    $signin = new Signin();
-
-    $timestart = date('Y-m-d H:i:s'); 
-
-    if (isset($data['startTime'])) {
-        $signin->setTimestart($data['startTime']);
-    } else {
-        $signin->setTimestart($timestart); 
+    public function create(Request $request, SigninRepository $signinRepository, JWTTokenManagerInterface $jwtManager, ManagerRegistry $doctrine, ValidatorInterface $validator): Response
+    {
+        $data = json_decode($request->getContent(), true);
+    
+        $signin = new Signin();
+    
+        if (isset($data['startTime'])) {
+            $signin->setTimestart($data['startTime']);
+        } else {
+            $signin->setTimestart(date('Y-m-d H:i:s')); 
+        }
+    
+        if (isset($data['endTime'])) {
+            $signin->setTimestop($data['endTime']);
+        } else {
+            $signin->setTimestop(date('Y-m-d H:i:s'));
+        }
+    
+        if (isset($data['pausedTime'])) {
+            $signin->setTimerestart($data['pausedTime']);
+        }
+    
+        if (isset($data['timeFinish'])) {
+            $signin->setTimefinish($data['timeFinish']);
+        }
+    
+        if (isset($data['totalHours'])) {
+            $signin->setHourcount($data['totalHours']);
+        }
+    
+        // Validando los datos
+        $errors = $validator->validate($signin);
+    
+        if (count($errors) > 0) {
+            // Enviando error de validación
+            return $this->json(['error' => 'Validation failed'], Response::HTTP_BAD_REQUEST);
+        }
+    
+        try {
+            $em = $doctrine->getManager();
+            $em->persist($signin);
+            $em->flush();
+        } catch (\Exception $e) {
+            
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    
+        $token = $jwtManager->create($this->getUser());
+    
+        return $this->json(['status' => 'ok', 'token' => $token]);
     }
-
-    if (isset($data['endTime'])) {
-        $signin->setTimestop($data['endTime']);
-    } else {
-        
-        $signin->setTimestop(date('Y-m-d H:i:s'));
-    }
-
-    if (isset($data['pausedTime'])) {
-        $signin->setTimerestart($data['pausedTime']);
-    }
-
-    if (isset($data['timeFinish'])) {
-        $signin->setTimefinish($data['timeFinish']);
-    }
-
-    if (isset($data['totalHours'])) {
-        $signin->setHourcount($data['totalHours']);
-    }
-
-    $em = $doctrine->getManager();
-    $em->persist($signin);
-    $em->flush();
-
-    $token = $jwtManager->create($this->getUser());
-
-    return $this->json(['status' => 'ok', 'token' => $token]);
-}
 }

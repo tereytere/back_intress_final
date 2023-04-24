@@ -12,6 +12,7 @@ class SigninType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('dates')
             ->add('timestart')
             ->add('timestop')
             ->add('timerestart')

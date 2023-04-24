@@ -31,7 +31,6 @@ class ApiDocumentsController extends AbstractController
                 'date' => $p->getDate(),
                 'description' => $p->getDescription(),
                 'docname' => $p->getDocname(),
-                'file' => $this->generateUrl('app_apidocuments_file', ['id' => $p->getId()])
             ];
         }
 
@@ -41,7 +40,7 @@ class ApiDocumentsController extends AbstractController
     #[Route('/file/{id}', name: 'app_apidocuments_file', methods: ['GET'])]
     public function getFile(Documents $document): Response
     {
-        $filePath = $this->getParameter('documents_directory').'/'.$document->getFile();
+        $filePath = $this->getParameter('documents_directory').'/'.$document->getDocument();
         $fileContent = file_get_contents($filePath);
         $response = new Response($fileContent);
         $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $document->getDocname());
@@ -56,39 +55,17 @@ class ApiDocumentsController extends AbstractController
         $form = $this->createForm(DocumentsType::class, $document);
         $form->handleRequest($request);
 
-        // $uploadedFile = $request->files->get('document');
-        // if (!$uploadedFile) {
-        //     return $this->json(['error' => 'No file uploaded'], 400);
-        // }
-
-        // // Store the file in a server directory
-        // $destination = $this->getParameter('kernel.project_dir').'/public/uploads/documents';
-        // $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-        // $safeFilename = $slugger->slug($originalFilename);
-        // $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadedFile->guessExtension();
-        // $uploadedFile->move(
-        //     $destination,
-        //     $newFilename
-        // );
-
-        // // Do other operations with the submitted file data
-        // $submittedDateTime = new \DateTime();
-        // $data = [
-        //     'fileName' => $newFilename,
-        //     'submitTime' => $submittedDateTime->format('Y-m-d H:i:s'),
-        // ];
-
-        // return $this->json($data, 200);
-
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
-            $fileName = uniqid().'.'.$file->guessExtension();
+
+            $fileName = $slugger->slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+            $newFileName = $fileName.'.'.$file->guessExtension();
 
             try {
                 $file->move(
-                    $this->getParameter('documents_directory'),
-                    $fileName
+                    $this->getParameter('documents_directory'), 
+                    $newFileName 
                 );
             } catch (FileException $e) {
                 return $this->json([
@@ -96,19 +73,13 @@ class ApiDocumentsController extends AbstractController
                 ], $status = 400);
             }
 
-            $document->setFile($fileName);
+           
+            $document->setDocname($newFileName);
 
-            $em = $doctrine->getManager();
-            $em->persist($document);
-            $em->flush();
+      
 
-            return $this->json([
-                'message' => 'Documento subido correctamente'
-            ], $status = 201, $headers = ['Access-Control-Allow-Origin'=>'*']);
+
         }
-
-        return $this->json([
-            'message' => 'Se ha producido un ERROR'
-        ], $status = 400, $headers = ['Access-Control-Allow-Origin'=>'*']);
-    }
 }
+}
+

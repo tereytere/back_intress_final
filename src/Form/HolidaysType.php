@@ -15,7 +15,8 @@ class HolidaysType extends AbstractType
             ->add('date')
             ->add('workshops')
             ->add('signins')
-        ;
+            ->add('days')       
+         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
