@@ -33,6 +33,10 @@ class Vacation
     {
         return $this->id;
     }
+    public function __toString() {
+        return $this ->id;
+    
+    }
 
     public function getPersonal(): ?Personal
     {
@@ -45,10 +49,7 @@ class Vacation
 
         return $this;
     }
-    public function __toString() {
-        return $this ->personal;
     
-    }
 
     public function getHolidays(): ?Holidays
     {
@@ -61,6 +62,7 @@ class Vacation
 
         return $this;
     }
+    
 
     /**
      * @return Collection<int, Personal>

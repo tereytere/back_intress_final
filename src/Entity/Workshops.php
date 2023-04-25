@@ -71,6 +71,10 @@ class Workshops
 
         return $this;
     }
+    public function __toString() {
+        return $this -> date;
+    
+    }
 
     public function getDescription(): ?string
     {
@@ -82,10 +86,6 @@ class Workshops
         $this->description = $description;
 
         return $this;
-    }
-    public function __toString() {
-        return $this -> description;
-    
     }
 
     /**
